@@ -31,15 +31,23 @@ Move around and avoid getting hit by the blocks flying at you. You win if your s
 ## Milestone 1 update
 Code based on Assignment 4. Milestone1 includes a change of Field of view when hit by block. The fov moves closer and then gradually moves back. This creates a more genuine feeling of "getting hit" and also allows a little more time to react and recover from the hit.
 
+====
+## Milestone 2 update
+* Include binaural effect for the sound source.
+* Include a "siren" object (with binaural and doppler effect). When this particular object get hit, the score will increase instead of decreasing like all other objects.
+* The color of objects on the screen are changing gradually instead of previous random colors
+* The color of the tunnel also changes gradually instead of previous white tunnel.  
+* Background color includes a gradient instead of previous black color.
+
 ## Screenshots
 *Start Screen*
 ![Start Screen](screenshots/Img1.png?raw=true "Start Screen")
 *Game Screen*
-![Game Screen](screenshots/Img2.png?raw=true "Start Screen")
+![Game Screen](screenshots/Img2.png?raw=true "Game Screen")
 *Pause Screen*
-![Pause Screen](screenshots/Img3.png?raw=true "Start Screen")
+![Pause Screen](screenshots/Img3.png?raw=true "Pause Screen")
 *Result Screen*
-![Result Screen](screenshots/Img4.png?raw=true "Start Screen")
+![Result Screen](screenshots/Img4.png?raw=true "Result Screen")
 
 
 

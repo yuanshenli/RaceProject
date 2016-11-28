@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxHoa.h"
 #include "ofxStk.h"
+#include "smooth.h"
+#include "FileLoop.h"
 #include <random>
 
 /*
@@ -43,6 +45,7 @@ class ofApp : public ofBaseApp{
             location.z = depth;
         }
         int index;
+        int scoreSign;
     };
     struct Bracket: public DrawableObj {
         float depth;
@@ -50,9 +53,10 @@ class ofApp : public ofBaseApp{
     const float initialStarZ = 1000;
     float starSpeed = 10;
     const float moveSpeed = 3;
-    const int starsCount = 25; //50;
+    const int starsCount = 79; //50;
+    const int countOverSoundSource = 40;
     const float boxSize = 10.0;
-    const float bumpRange = 5.0;
+    
     std::vector<Star> stars;
     std::vector<Bracket> brackets;
     std::default_random_engine generator;
@@ -91,11 +95,8 @@ class ofApp : public ofBaseApp{
     // displacement
     float k1,k2;
     int scaleDis = 3000;
-    
-    
+
     float fov;
-    //    const int fovCountMax = hitCountMax / 2;
-    int fovCount = 0;
     bool isFOVChange = false;
     
     ofTrueTypeFont myfont;
@@ -128,7 +129,7 @@ public:
     void audioOut(float * output, int bufferSize, int nChannels);
     void exit();
     
-//    ofxHoaOscillator<float> myOsc, myEnv;
+//    ofxHoaOscillator<float> myEnv;
     ofxHoaOscillator<float> *myOsc, *myEnv;
    
     static const int order = 3;
@@ -137,7 +138,7 @@ public:
     int sampleRate;
     int nBuffers;
     
-    int nSources = starsCount;
+    int nSources = 2; //starsCount / countOverSoundSource;
     
     //MOST HOA CLASSES REQUIRE ARGUMENTS FOR INITILIZATION, SO WE CREATE THEM AS POINTERS
 //    Encoder<Hoa2d, float>::DC hoaEncoder = Encoder<Hoa2d, float>::DC(order);
@@ -166,6 +167,20 @@ public:
 //    ofVec3f * position;
     ofVec3f circleCenter;
     ofVec3f *sourcePosition;
-    stk::DelayL *delay;
+//    ofVec3f mainSourcePosition;
+    float sourcePhi = 0;
+    float sourceTheta = -M_PI;
+    float increPhi = 0.01;
+    float increTheta = 0.03;
+    float sourceR = 250;
+    
+    // Doppler Effect
+    stk::DelayA *delay;
+    float *delayLength;
+    float *delayGain;
+    Smooth *smooth;
+    stk::FileLoop *AudioIn;
+//    stk::FileWvIn *AudioIn;
+    
     
 };
