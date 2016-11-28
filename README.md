@@ -34,7 +34,7 @@ Code based on Assignment 4. Milestone1 includes a change of Field of view when h
 ====
 ## Milestone 2 update
 * Include binaural effect for the sound source.
-* Include a "siren" object (with binaural and doppler effect). When this particular object get hit, the score will increase instead of decreasing like all other objects.
+* Include a "siren" object (with binaural and doppler effect). When this particular object gets hit, the score will increase instead of decreasing like all other objects.
 * The color of objects on the screen are changing gradually instead of previous random colors
 * The color of the tunnel also changes gradually instead of previous white tunnel.  
 * Background color includes a gradient instead of previous black color.
