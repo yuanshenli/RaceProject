@@ -87,6 +87,7 @@
 		50194B1E1DE42F5A00A7BFFD /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 50194ABE1DE42F5A00A7BFFD /* README.md */; };
 		50523F241DDDA661008214FA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50523F231DDDA661008214FA /* AVFoundation.framework */; };
 		50523F261DDDA683008214FA /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50523F251DDDA683008214FA /* CoreMedia.framework */; };
+		509D003F1DF4028D009F1690 /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 509D003E1DF4028D009F1690 /* libboost_system.dylib */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -319,6 +320,7 @@
 		50194AC01DE42F5A00A7BFFD /* ofxStk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxStk.h; sourceTree = "<group>"; };
 		50523F231DDDA661008214FA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		50523F251DDDA683008214FA /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		509D003E1DF4028D009F1690 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../../../usr/local/Cellar/boost/1.62.0/lib/libboost_system.dylib; sourceTree = "<group>"; };
 		545BDBFC9096189763C6B4C6 /* Decoder.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Decoder.hpp; path = "../libs/HoaLibrary-Light/Sources/Decoder.hpp"; sourceTree = SOURCE_ROOT; };
 		59C4E10826F056938BFB0863 /* Voronoi.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Voronoi.hpp; path = "../libs/HoaLibrary-Light/Sources/Voronoi.hpp"; sourceTree = SOURCE_ROOT; };
 		6218AD7D60658E29858270CC /* Hoa.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Hoa.hpp; path = "../libs/HoaLibrary-Light/Sources/Hoa.hpp"; sourceTree = SOURCE_ROOT; };
@@ -370,6 +372,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				509D003F1DF4028D009F1690 /* libboost_system.dylib in Frameworks */,
 				50523F261DDDA683008214FA /* CoreMedia.framework in Frameworks */,
 				50523F241DDDA661008214FA /* AVFoundation.framework in Frameworks */,
 				E7F985F815E0DEA3003869B5 /* Accelerate.framework in Frameworks */,
@@ -655,6 +658,7 @@
 		50523F221DDDA661008214FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				509D003E1DF4028D009F1690 /* libboost_system.dylib */,
 				50523F251DDDA683008214FA /* CoreMedia.framework */,
 				50523F231DDDA661008214FA /* AVFoundation.framework */,
 			);
@@ -1087,10 +1091,19 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
-				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_LABEL = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxHoa/libs,
+					"../../../addons/ofxHoa/libs/HoaLibrary-Light",
+					"../../../addons/ofxHoa/libs/HoaLibrary-Light/Sources",
+					../../../addons/ofxHoa/libs/ofxHoaClasses,
+					../../../addons/ofxHoa/src,
+					/usr/local/include,
+				);
 				ICON = "$(ICON_NAME_DEBUG)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
@@ -1158,6 +1171,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_50)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_52)",
+					/usr/local/Cellar/boost/1.62.0/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;
@@ -1178,10 +1192,19 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = NONE;
-				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_LABEL = NO;
 				GCC_WARN_UNUSED_PARAMETER = NO;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxHoa/libs,
+					"../../../addons/ofxHoa/libs/HoaLibrary-Light",
+					"../../../addons/ofxHoa/libs/HoaLibrary-Light/Sources",
+					../../../addons/ofxHoa/libs/ofxHoaClasses,
+					../../../addons/ofxHoa/src,
+					/usr/local/include,
+				);
 				ICON = "$(ICON_NAME_RELEASE)";
 				ICON_FILE = "$(ICON_FILE_PATH)$(ICON)";
 				INFOPLIST_FILE = "openFrameworks-Info.plist";
@@ -1249,6 +1272,7 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_49)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_50)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_51)",
+					/usr/local/Cellar/boost/1.62.0/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = cc.openFrameworks.ofapp;

@@ -1,7 +1,34 @@
 #include "ofApp.h"
 
+void write(string str, std::unique_ptr<asio::serial_port>& port) {
+    boost::asio::write(*port, asio::buffer(str.c_str(), str.length()));
+}
+
+int times = 0;
+
+void send(int r, int g, int b, int x, int y, std::unique_ptr<asio::serial_port>& port) {
+    if (times % 2 == 0) {
+        std::stringstream add_string;
+        add_string << r << " " << g << " " << b << " " << x << " " << y << "\n";
+        cout<< "add_string: " << add_string.str() << std::endl;
+        const char * temp = add_string.str().c_str();
+        try {
+            write(add_string.str(), port);
+        } catch( const boost::system::system_error& ex ) {
+        }
+    }
+    times += 1;
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
+    port = std::make_unique<asio::serial_port>(io);
+    port->open("/dev/cu.usbmodem1421");
+    port->set_option(asio::serial_port_base::baud_rate(115200));
+    port->set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::type::none));
+    port->set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::type::none));
+    port->set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::type::one));
+    
     
 //    sound.load("beats.mp3");
 //    sound.setLoop( true );
@@ -88,6 +115,8 @@ void ofApp::setup(){
     smooth = new Smooth[nSources];
     delayLength = new float[nSources];
     delayGain = new float[nSources];
+    shift = new stk::PitShift[nSources];
+    shiftVal = new float[nSources];
     
     for (int i = 0; i<nSources; i++) {
         if (i == 0) {
@@ -107,9 +136,11 @@ void ofApp::setup(){
         hoaCoord->setAmbisonicRadius(circleRadius);
         hoaCoord->setRamp(50, sampleRate);
         hoaCoord->setSourcePositionDirect(0, ofVec3f(10000,10000));
+//        shift[i].setShift(1.0);
+//        shiftVal[i] = 1.0;
         delay[i].setDelay(0.5);
-        delay[i].setMaximumDelay(1000.0);
-        smooth[i].setSmooth(0.999);
+        delay[i].setMaximumDelay(10000.0+abs(delayOffset));
+        smooth[i].setSmooth(0.9999);
     }
     harmonicMatrix = new float * [order * 2+1];
     for (int i = 0; i< order*2+1;++i) harmonicMatrix[i] = new float[bufferSize];
@@ -119,8 +150,6 @@ void ofApp::setup(){
     outputMatrix[1] = new float[bufferSize];
     soundStream.setup(this, nOutputs, nInputs, sampleRate, bufferSize, nBuffers);
     soundStream.stop();
-    
-
 }
 
 //--------------------------------------------------------------
@@ -228,6 +257,7 @@ void ofApp::update(){
             hoaCoord->setSourcePosition(0, sourcePosition[0]);
             delayLength[0] = 0.5;
             delayGain[0] = 1;
+//            shift[0].setShift(1.0);
         }
         if ((star.index % countOverSoundSource == 0) && (star.index != 0)) {
             int sourceIndex = star.index / countOverSoundSource;
@@ -235,9 +265,12 @@ void ofApp::update(){
             
 //            cout << sourceIndex << ":" << sourcePosition[sourceIndex] << endl;
             hoaCoord->setSourcePosition(sourceIndex, sourcePosition[sourceIndex]);
-            delayLength[sourceIndex] =abs(star.location.z)/initialStarZ*3000+0.5;
-            delayGain[sourceIndex] = exp(-abs(star.location.z)/200);
-            cout << delayGain[sourceIndex] <<endl;
+            delayLength[sourceIndex] =abs(star.location.z+delayOffset)/(initialStarZ+abs(delayOffset))*10000+0.5;
+            
+            delayGain[sourceIndex] = exp(-abs(star.location.z+delayOffset)/200);
+//            shiftVal[sourceIndex] = -exp(-abs(star.location.z)/100)/2 + 1.0;
+//            cout << shiftVal[sourceIndex] << endl;
+//            cout << delayGain[sourceIndex] <<endl;
         }
         // check if hit the stars
         float distance2 = star.location.z * star.location.z
@@ -270,34 +303,49 @@ void ofApp::update(){
             bracket.generateColor(distribution, generator, currentFrame);
         }
     }
+    
+    #pragma mark - Update Cop Color
+    if (copColor >=255) {
+        copColor = 0.0;
+    }
+    copColor += copColorIncrement;
+    
 
     #pragma mark - Update Position
     // check key press and update position
     if (isStart) {
         if (directionLeft){
-            if (offsetX < starRangeWidth * 0.95){
+            if (offsetX < starRangeWidth){
                 offsetX += moveSpeed;
             }
         }
         if (directionRight){
-            if (offsetX > -starRangeWidth * 0.95){
+            if (offsetX > -starRangeWidth){
                 offsetX -= moveSpeed;
             }
         }
         if (directionUp){
-            if (offsetY > -starRangeHeight * 0.75){
+            if (offsetY > -starRangeHeight * 0.85){
                 offsetY -= moveSpeed;
             }
         }
         if (directionDown){
-            if (offsetY < starRangeHeight * 0.75){
+            if (offsetY < starRangeHeight * 0.85){
                 offsetY += moveSpeed;
             }
         }
     }
     // Update Timer
     lastTime = currentTime;
+    int r = brackets[0].color.x;
+    int g = brackets[0].color.y;
+    int b = brackets[0].color.z;
+    int x = (k1 + 1) * 50;
+    int y = (k2 + 1) * 50;
+    send(r, g, b, x, y, port);
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -347,6 +395,7 @@ void ofApp::draw(){
         // tilt the trajectory
         k1 = ofSignedNoise(1,currentFrame/100);
         k2 = ofSignedNoise(currentFrame/100,1);
+//        cout << k1 << "," << k2 <<endl;
         ofPolyline line1;
         ofPolyline line2;
         ofPolyline line3;
@@ -370,7 +419,7 @@ void ofApp::draw(){
             int y2 = 140 + k2 * trueZ * trueZ/scaleDis;
             
             ofSetColor(bracket.color.x, bracket.color.y, bracket.color.z);
-            
+//            cout <<bracket.color.x<<endl;
             ofDrawLine(x1, y1, -trueZ, x2, y1, -trueZ);
             ofDrawLine(x2, y1, -trueZ, x2, y2, -trueZ);
             ofDrawLine(x2, y2, -trueZ, x1, y2, -trueZ);
@@ -393,7 +442,12 @@ void ofApp::draw(){
                 star.obj.draw();
                 if ((star.index % countOverSoundSource == 0) && (star.index != 0)) {
 //                    ofNoFill();
-                    ofSetColor(ofColor(255));
+                    
+                    ofSetColor(ofColor(copColor, 0, 255.0-copColor));
+//                    cout << copColor << endl;
+//                    star.obj.draw();
+//                    star.glowingObj.drawWireframe();
+                    star.glowingObj.rotate(5, 0, 1, 0);
                     star.glowingObj.draw();
                 }
             }
@@ -465,6 +519,8 @@ void ofApp::keyPressed(int key){
         if (isInitialState){
 //            sound.unload();
 //            sound.load("beats.mp3");
+            
+            
             gameTime = 60;
             starSpeed = 7.0;
         }
@@ -493,6 +549,10 @@ void ofApp::keyPressed(int key){
                 soundStream.start();
 //                soundStream.setup(this, nOutputs, nInputs, sampleRate, bufferSize, nBuffers);
 //                sound.play();
+                
+                for (int i = 0; i<nSources; i++) {
+                    AudioIn[i].reset();
+                }
             }
         }
         isStart = true;
@@ -554,6 +614,10 @@ void ofApp::audioOut( float * output, int bufferSize, int nChannels){
             delay[j].setDelay(0.5 + smooth[j].tick(delayLength[j]));
             delay[j].setGain(delayGain[j]);
             input[j] = delay[j].tick(AudioIn[j].tick()*(myEnv[j].tick()+1)/nSources*0.05);
+            
+//            shift[j].setShift(shiftVal[j]);
+//            input[j] = shift[j].tick(AudioIn[j].tick()/nSources*0.05);
+
             hoaEncoder->setRadius(j, hoaCoord->getRadius(j)/2);
             hoaEncoder->setAzimuth(j, hoaCoord->getAzimuth(j));
         }
@@ -572,6 +636,9 @@ void ofApp::audioOut( float * output, int bufferSize, int nChannels){
 }
 
 void ofApp::exit(){
+    if (portOpened) {
+        port->close();
+    }
     // close soundStream
     soundStream.close();
     

@@ -6,14 +6,21 @@
 #include "smooth.h"
 #include "FileLoop.h"
 #include <random>
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio.hpp>
 
 /*
     The binaural decoder works in a slightly different manner for optimization purposes
  */
 
 using namespace hoa;
+using namespace boost;
 
 class ofApp : public ofBaseApp{
+    asio::io_service io;
+    std::unique_ptr<asio::serial_port> port;
+    bool portOpened = false;
+    
     float offsetX = 0;
     float offsetY = 0;
     float windowWidth = 0;
@@ -65,10 +72,12 @@ class ofApp : public ofBaseApp{
     bool directionDown = false;
     bool directionLeft = false;
     bool directionRight = false;
+    
     // guard parameter
     bool isGuarded = false;
     const int guardCountMax = 50;
     int guardCount = guardCountMax;
+    
     // hit parameter
     bool isHit = false;
     const int hitCountMax = 25;
@@ -92,10 +101,14 @@ class ofApp : public ofBaseApp{
     int currentTime = 0;
     int timePassed = 0;
     int lastSpeedUpdateTime = 0;
+    
     // displacement
     float k1,k2;
     int scaleDis = 3000;
 
+    float copColor = 0.0;
+    float copColorIncrement = 10.0;
+    
     float fov;
     bool isFOVChange = false;
     
@@ -129,7 +142,7 @@ public:
     void audioOut(float * output, int bufferSize, int nChannels);
     void exit();
     
-//    ofxHoaOscillator<float> myEnv;
+    // ofxHoaOscillator<float> myEnv;
     ofxHoaOscillator<float> *myOsc, *myEnv;
    
     static const int order = 3;
@@ -141,11 +154,6 @@ public:
     int nSources = 2; //starsCount / countOverSoundSource;
     
     //MOST HOA CLASSES REQUIRE ARGUMENTS FOR INITILIZATION, SO WE CREATE THEM AS POINTERS
-//    Encoder<Hoa2d, float>::DC hoaEncoder = Encoder<Hoa2d, float>::DC(order);
-//    Decoder<Hoa2d, float>::Binaural hoaDecoder = Decoder<Hoa2d, float>::Binaural(order);
-//    Optim<Hoa2d, float>::Basic hoaOptim = Optim<Hoa2d, float>::Basic(order);
-//    ofxHoaCoord<Hoa2d, float> hoaCoord = ofxHoaCoord<Hoa2d, float>(1);
-    
     Encoder<Hoa2d, float>::Multi *hoaEncoder = new Encoder<Hoa2d, float>::Multi(order, nSources);
     Decoder<Hoa2d, float>::Binaural *hoaDecoder = new Decoder<Hoa2d, float>::Binaural(order);
     Optim<Hoa2d, float>::Basic *hoaOptim = new Optim<Hoa2d, float>::Basic(order);
@@ -176,8 +184,11 @@ public:
     
     // Doppler Effect
     stk::DelayA *delay;
+    float *shiftVal;
+    stk::PitShift *shift;
     float *delayLength;
     float *delayGain;
+    float delayOffset = -150.0;
     Smooth *smooth;
     stk::FileLoop *AudioIn;
 //    stk::FileWvIn *AudioIn;
