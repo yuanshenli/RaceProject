@@ -1,33 +1,33 @@
 #include "ofApp.h"
 
 void write(string str, std::unique_ptr<asio::serial_port>& port) {
-    boost::asio::write(*port, asio::buffer(str.c_str(), str.length()));
+//    boost::asio::write(*port, asio::buffer(str.c_str(), str.length()));
 }
 
 int times = 0;
 
 void send(int r, int g, int b, int x, int y, std::unique_ptr<asio::serial_port>& port) {
-    if (times % 2 == 0) {
-        std::stringstream add_string;
-        add_string << r << " " << g << " " << b << " " << x << " " << y << "\n";
-        cout<< "add_string: " << add_string.str() << std::endl;
-        const char * temp = add_string.str().c_str();
-        try {
-            write(add_string.str(), port);
-        } catch( const boost::system::system_error& ex ) {
-        }
-    }
-    times += 1;
+//    if (times % 2 == 0) {
+//        std::stringstream add_string;
+//        add_string << r << " " << g << " " << b << " " << x << " " << y << "\n";
+//        cout<< "add_string: " << add_string.str() << std::endl;
+//        const char * temp = add_string.str().c_str();
+//        try {
+//            write(add_string.str(), port);
+//        } catch( const boost::system::system_error& ex ) {
+//        }
+//    }
+//    times += 1;
 }
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    port = std::make_unique<asio::serial_port>(io);
-    port->open("/dev/cu.usbmodem1421");
-    port->set_option(asio::serial_port_base::baud_rate(115200));
-    port->set_option(asio::serial_port_base::flow_control(asio::serial_port_base::flow_control::type::none));
-    port->set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::type::none));
-    port->set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::type::one));
+//    port = std::make_unique<asio::serial_port>(io);
+//    port->open("/dev/cu.usbmodem1421");
+//    port->set_option(asio::serial_port_base::baud_rate(115200));
+//    port->set_option(asio::cserial_port_base::flow_control(asio::serial_port_base::flow_control::type::none));
+//    port->set_option(asio::serial_port_base::parity(asio::serial_port_base::parity::type::none));
+//    port->set_option(asio::serial_port_base::stop_bits(asio::serial_port_base::stop_bits::type::one));
     
     
 //    sound.load("beats.mp3");
