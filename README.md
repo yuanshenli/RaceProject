@@ -1,4 +1,4 @@
-# `AVOIDING BLOCKS`
+# `TUNNEL RACING`
 ======
 
 ### [Shenli Yuan](shenliy@stanford.edu) 
